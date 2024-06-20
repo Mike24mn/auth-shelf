@@ -6,7 +6,24 @@ const router = express.Router();
  * Get all of the items on the shelf
  */
 router.get('/', (req, res) => {
-  res.sendStatus(200); // For testing only, can be removed
+  if (req.isAuthenticated()) {
+    console.log('User is authenticated?:', req.isAuthenticated());
+    console.log("Current user is: ", req.user.username);
+    
+    const sqlText = `SELECT * From item`;
+    pool
+      .query(sqlText)
+      .then((result) => {
+        console.log(`GET from database`, result);
+        res.send(result.rows);
+      })
+      .catch((error) => {
+        console.log(`Error making database query ${sqlText}`, error);
+        res.sendStatus(500);
+      });
+  } else {
+    res.sendStatus(401); 
+  }
 });
 
 /**
