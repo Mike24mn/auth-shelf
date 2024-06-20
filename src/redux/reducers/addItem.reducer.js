@@ -1,12 +1,13 @@
 
 const addItem = (state = [], action) => {
     switch (action.type) {
-        case 'ADD_ITEM':
-            return action.payload;
+        case 'ADD_ITEM_SUCCESS':
+            return [...state, action.payload]; 
         default:
             return state;
     }
 }
+
 
 
 

@@ -27,7 +27,7 @@ router.post('/', (req, res) => {
 
     let queryText = `
       INSERT INTO "item"
-      ("description", "image_url", "user_id")
+      ( "description", "image_url", "user_id")
       VALUES 
       ($1, $2, $3);
     `;
