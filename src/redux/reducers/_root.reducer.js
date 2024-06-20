@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux';
 import errors from './errors.reducer';
 import user from './user.reducer';
-
+import addItem from './addItem.reducer';
+import shelfReducer from './shelfItem.reducer'
 
 // rootReducer is the primary reducer for our entire project
 // It bundles up all of the other reducers so our project can use them.
@@ -11,7 +12,9 @@ import user from './user.reducer';
 // This is what we get when we use 'state' inside of 'mapStateToProps'
 const rootReducer = combineReducers({
   errors, // contains registrationMessage and loginMessage
-
+  user,
+  shelfReducer,
+  addItem
 });
 
 export default rootReducer;
