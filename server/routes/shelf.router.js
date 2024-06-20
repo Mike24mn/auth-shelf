@@ -29,8 +29,39 @@ router.get('/', (req, res) => {
 /**
  * Add an item for the logged in user to the shelf
  */
+
+// Irrelevant side note: 
+// Worth noting that the sample repo Key was working on has access_levels within the user table in the database
+// I dont think we need access_levels here, just user login authentication, as we aren't authorizing anything
+// just verifying login via authentication.
+
 router.post('/', (req, res) => {
-  // endpoint functionality
+  if (req.isAuthenticated()) {
+    console.log('User is authenticated?:', req.isAuthenticated());
+    console.log("Current user is: ", req.user.username);
+
+ 
+
+    let queryText = `
+      INSERT INTO "item"
+      ( "description", "image_url", "user_id")
+      VALUES 
+      ($1, $2, $3);
+    `;
+
+    const sqlValues = [req.body.description, req.body.image_url, req.user.id];
+
+    pool.query(queryText, sqlValues)
+      .then((result) => {
+        res.sendStatus(201);
+      })
+      .catch((error) => {
+        console.log("Error with POST /api/shelf:", error);
+        res.sendStatus(500);
+      });
+  } else {
+    res.sendStatus(403); 
+  }
 });
 
 /**
