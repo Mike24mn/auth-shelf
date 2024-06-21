@@ -4,6 +4,8 @@ import registrationSaga from "./registration.saga";
 import userSaga from "./user.saga";
 import fetchItem from "./shelf.item.saga";
 import addItem from "./addItem.saga";
+// import deleteShelfItem from "./delete.saga";
+
 
 // rootSaga is the primary saga.
 // It bundles up all of the other sagas so our project can use them.
@@ -18,6 +20,7 @@ export default function* rootSaga() {
     registrationSaga(),
     userSaga(),
     fetchItem(),
+    // deleteShelfItem()
    // addItem(),this was causing duplicate submission since we were working on similar rendering
   ]);
 }

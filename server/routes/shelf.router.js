@@ -1,7 +1,9 @@
 const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
-
+const {
+  rejectUnauthenticated,
+} = require('../modules/authentication-middleware');
 /**
  * Get all of the items on the shelf
  */
@@ -35,8 +37,8 @@ router.get('/', (req, res) => {
 // I dont think we need access_levels here, just user login authentication, as we aren't authorizing anything
 // just verifying login via authentication.
 
-router.post('/', (req, res) => {
-  if (req.isAuthenticated() ) {
+router.post('/', rejectUnauthenticated, (req, res) => {
+  
   console.log('User is authenticated?:', req.isAuthenticated());
   console.log("Current user is: ", req.user.username);
   console.log("Current request body is: ", req.body);
@@ -46,7 +48,7 @@ router.post('/', (req, res) => {
     if (!description || !image_url) {
       console.log("We are missing something in img or desc")
       res.sendStatus(400)
-      return
+      return;
     }
   let queryText = `
   INSERT INTO "item"
@@ -64,17 +66,32 @@ router.post('/', (req, res) => {
     console.log('Error making POST insert for shelf item:', error);
     res.sendStatus(500)
   })
-}
-else {
-  res.sendStatus(401)
-}
+
 });
 
 /**
  * Delete an item if it's something the logged in user added
  */
-router.delete('/:id', (req, res) => {
-  // endpoint functionality
+router.delete('/:id', rejectUnauthenticated, (req, res) => {
+    const itemId = req.params.id;
+    const userId = req.user.id;
+
+    const queryText = `
+    DELETE FROM "item"
+    WHERE "id" = $1 AND "user_id" = $2
+    `
+    pool.query(queryText, [itemId, userId])
+    .then ((result) => {
+      if (result.rowCount > 0) {
+        res.sendStatus(204)
+      } else {
+        res.sendStatus(403)
+      } 
+    })
+    .catch((error) => {
+      console.log('Error with DELETE', error);
+      res.sendStatus(500)
+    })
 });
 
 /**

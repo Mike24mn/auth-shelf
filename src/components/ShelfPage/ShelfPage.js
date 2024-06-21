@@ -1,11 +1,13 @@
 import React from 'react';
 import { useDispatch,useSelector} from 'react-redux';
 import { useEffect, useState } from 'react';
+import deleteItem from '../../redux/reducers/delete.reducer';
 
 
 function ShelfPage() {
   const dispatch = useDispatch();
   const shelfItems = useSelector((store)=>store.shelfReducer)
+  const deleteItem = useSelector((store) => store.deleteItem)
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
 
@@ -25,8 +27,15 @@ const handleSubmit = (event) => {
   setImage('');
 }
 
+const handleDelete = (itemId) => {
+  console.log("Delete Clicked");
+  console.log("Item ID is:", itemId);
+  dispatch({ type: 'DELETE_ITEM', payload: itemId})
+  return;
 
-  return (
+}
+
+  return (<>
     <div className="container">
       <h2>Shelf</h2>
 
@@ -50,14 +59,16 @@ const handleSubmit = (event) => {
       <p>All of the available items can be seen here.</p>
       
         {shelfItems.map((item)=>(
-          <li key={item.id}>{item.description} {item.image_url}</li>
+          <li key={item.id}>{item.description} {item.image_url}
+          <button onClick={() => handleDelete(item.id)}>Delete</button>
+          </li>
         )
         )}
 
       
 
     </div>
-  );
+    </> );
 }
 
 export default ShelfPage;

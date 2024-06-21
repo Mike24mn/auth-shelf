@@ -14,7 +14,7 @@ const rootReducer = combineReducers({
   errors, // contains registrationMessage and loginMessage
   user,
   shelfReducer,
-  addItem
+  addItem,
 });
 
 export default rootReducer;
