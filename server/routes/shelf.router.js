@@ -36,32 +36,38 @@ router.get('/', (req, res) => {
 // just verifying login via authentication.
 
 router.post('/', (req, res) => {
-  if (req.isAuthenticated()) {
-    console.log('User is authenticated?:', req.isAuthenticated());
-    console.log("Current user is: ", req.user.username);
-
- 
-
-    let queryText = `
-      INSERT INTO "item"
-      ( "description", "image_url", "user_id")
-      VALUES 
-      ($1, $2, $3);
-    `;
-
-    const sqlValues = [req.body.description, req.body.image_url, req.user.id];
-
-    pool.query(queryText, sqlValues)
-      .then((result) => {
-        res.sendStatus(201);
-      })
-      .catch((error) => {
-        console.log("Error with POST /api/shelf:", error);
-        res.sendStatus(500);
-      });
-  } else {
-    res.sendStatus(403); 
-  }
+  if (req.isAuthenticated() ) {
+  console.log('User is authenticated?:', req.isAuthenticated());
+  console.log("Current user is: ", req.user.username);
+  console.log("Current request body is: ", req.body);
+  const { description, image_url } = req.body // destructure desc and image_url w/ req.body
+  console.log("Current request body is: ", req.body);
+  // logic for null values???
+    if (!description || !image_url) {
+      console.log("We are missing something in img or desc")
+      res.sendStatus(400)
+      return
+    }
+  let queryText = `
+  INSERT INTO "item"
+  ("description", "image_url", "user_id")
+  VALUES
+  ($1, $2, $3)
+  `;
+  const values = [ description, image_url, req.user.id ]
+  pool
+    .query(queryText, values)
+    .then (() => {
+      res.sendStatus(200);
+    })
+    .catch((error) => {
+    console.log('Error making POST insert for shelf item:', error);
+    res.sendStatus(500)
+  })
+}
+else {
+  res.sendStatus(401)
+}
 });
 
 /**

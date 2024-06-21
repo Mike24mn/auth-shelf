@@ -1,4 +1,4 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { put, takeLatest, call } from 'redux-saga/effects';
 import axios from 'axios';
 
 
@@ -11,10 +11,18 @@ function* fetchItem(){
     }
 }
 
+function* addItem(action) {
+    try {
+      yield call(axios.post, '/api/shelf', action.payload);
+      yield put({ type: 'FETCH_ITEM' })
+    } catch (error) {
+      console.log('Error with the shelf post request', error);
+    }
+  }
+  
+  function* shelfSaga() {
+    yield takeLatest('FETCH_ITEM', fetchItem);
+    yield takeLatest('ADD_ITEM', addItem);
+  }
 
-function* shelfSaga(){
-    yield takeLatest('FETCH_ITEM',fetchItem)
-}
-
-export default shelfSaga 
-
+export default shelfSaga
